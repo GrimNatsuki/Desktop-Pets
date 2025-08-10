@@ -2,8 +2,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
-
-#include "configParser.hpp"
+#include "VectorStructs.hpp"
 
 int PetEngine()
 {
@@ -26,8 +25,6 @@ int PetEngine()
     static int windowWidth = 128;
     static int windowHeight = 128;
 
-    
-
     SDL_PropertiesID props = SDL_CreateProperties();
     SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, "DesktopPetEngineWindow");
     SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
@@ -49,9 +46,26 @@ int PetEngine()
 
     SDL_Log("Pet Engine started");
 
+    Vector2int windowPos;
+
+    SDL_GetWindowPosition(window, &windowPos.x, &windowPos.y);
+    std::cout<<windowPos.x<<" "<<windowPos.y<<std::endl;  
+
     bool isRunning=true;
+
+    bool isFalling=true;
+
+    Vector2f virtualPos = {static_cast<float>(windowPos.x), static_cast<float>(windowPos.y)};
+
     while (isRunning)
     {
+        //updates window position per frame
+
+        windowPos.x = virtualPos.x;
+        windowPos.y = virtualPos.y;
+
+        SDL_SetWindowPosition(window, windowPos.x, windowPos.y);
+
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
@@ -62,9 +76,15 @@ int PetEngine()
             }
         }
 
+        if (isFalling)
+        {
+            virtualPos.y += 0.1;
+        }
+
+
+
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     	SDL_RenderClear(renderer);
-
         SDL_RenderTexture(renderer, tex, &srcRect, &dsRect);
         
         SDL_RenderPresent(renderer);
@@ -74,7 +94,6 @@ int PetEngine()
     SDL_DestroyWindow(window);
     SDL_Log("Pet Engine quit");
 
-    configParser();
     std::cout<<"Closing app..."<<std::endl;
 
     return 0;
