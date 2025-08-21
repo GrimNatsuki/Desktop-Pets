@@ -1,4 +1,3 @@
-#include <iostream>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
@@ -49,7 +48,6 @@ int PetEngine()
     Vector2int windowPos;
 
     SDL_GetWindowPosition(window, &windowPos.x, &windowPos.y);
-    std::cout<<windowPos.x<<" "<<windowPos.y<<std::endl;  
 
     bool isRunning=true;
 
@@ -71,7 +69,6 @@ int PetEngine()
         {
             if (event.type == SDL_EVENT_QUIT)
 			{
-				std::cout << "Pet Engine Terminated" << std::endl;
 				isRunning = false;
             }
         }
@@ -93,8 +90,6 @@ int PetEngine()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Log("Pet Engine quit");
-
-    std::cout<<"Closing app..."<<std::endl;
 
     return 0;
 }

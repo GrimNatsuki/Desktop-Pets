@@ -1,8 +1,6 @@
-#include <iostream>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-
-#include "DesktopPetsApps.hpp"
+#include "desktopPetsHeaders.hpp"
 
 
 int Launcher()
@@ -26,7 +24,6 @@ int Launcher()
     SDL_GetDisplays(&displayID);
     SDL_Rect displayBounds;
     SDL_GetDisplayBounds(displayID, &displayBounds);
-    std::cout<<displayBounds.x<<", "<<displayBounds.y<<", "<<displayBounds.w<<", "<<displayBounds.h<<std::endl;
 
     static int windowWidth = 0.8*displayBounds.w; 
     static int windowHeight = 0.8*displayBounds.h;
@@ -76,7 +73,6 @@ int Launcher()
         {
             if (event.type == SDL_EVENT_QUIT)
 			{
-				std::cout << "Launcher Menu Terminated" << std::endl;
 				isRunning = false;
             }
         }
