@@ -1,0 +1,7 @@
+{
+    "name": "Cartethyia",
+    "version": "1.0.0",
+    "sprite_file_path": "tex/CartethyiaSpriteMap.png",
+    "sprite_size": [128, 128],
+    "display_size": [128, 128]
+}
