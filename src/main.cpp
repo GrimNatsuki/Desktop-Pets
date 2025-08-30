@@ -1,28 +1,34 @@
 #define SDL_MAIN_USE_CALLBACKS 1
-//#include <iostream>
+#include <iostream>
 #include <string>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include "VectorStructs.hpp"
 #include "PetEngine.hpp"
-#include "Timer.hpp"
 
 int displayID;
 SDL_Rect displayBounds;
 
-Timer timer;
 PetEngine Pet;
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
-    SDL_SetAppMetadata("DesktopPetEngine", "1.0", "com.grimnatsuki.DesktopPets");
+    SDL_SetAppMetadata("DesktopPet", "1.0", "com.grimnatsuki.DesktopPets");
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_GetDisplays(&displayID);
     SDL_GetDisplayBounds(displayID, &displayBounds);
 
+
     Pet.loadConfig();
     Pet.createWindow();
     Pet.loadTexture();
+
+    
+
+    if (Pet.getState() == PetState::idle)
+    {
+        SDL_Log("Pet is idle");
+    }
 
     return SDL_APP_CONTINUE;
 }
@@ -37,11 +43,12 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     return SDL_APP_CONTINUE; 
 }
 
+
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
 
+    Pet.updateTime();
     Pet.updatePos();
-
     //SDL_SetWindowPosition(window, windowPos.x, windowPos.y);
     /*
     if (virtualPos.y < displayBounds.h-windowHeight)

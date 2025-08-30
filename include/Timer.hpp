@@ -1,3 +1,5 @@
+#pragma once
+
 class Timer
 {
     Uint64 currentTime;

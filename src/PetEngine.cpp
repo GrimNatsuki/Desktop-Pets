@@ -67,24 +67,55 @@ void PetEngine::switchState(PetState state)
     this->state = state;
 }
 
+PetState PetEngine::getState()
+{
+    return state;
+}
+
 void PetEngine::logState()
 {
     switch (state)
     {
-        case PetState::idle:
-            SDL_Log("Pet is idle");
+        case PetState::idle:        SDL_Log("Pet is idle"); break;
+        case PetState::walking:     SDL_Log("Pet is walking"); break;
+        case PetState::running:     SDL_Log("Pet is idle"); break;
+        case PetState::falling:     SDL_Log("Pet is falling"); break;
+        case PetState::mousePicked: SDL_Log("Pet is picked up by mouse"); break;
+    }
+}
+
+Vector2int PetEngine::getPos()
+{
+    SDL_GetWindowPosition(window, &windowPos.x, &windowPos.y);
+    return windowPos;
+}
+
+void PetEngine::fall()
+{
+    virtualPos.y += 0.1;
+}
+
+Uint64 PetEngine::getLifeTime()
+{
+    return lifeTime;
+}
+
+void PetEngine::updateTime()
+{
+    lifeTime = timer.elapsedMilliSeconds();
+}
+
+
+
+void PetEngine::walk(Direction direction)
+{
+    switch (direction)
+    {
+        case Direction::right:
+            virtualPos.x += 0.01;
             break;
-        case PetState::walking:
-            SDL_Log("Pet is walking");
-            break;
-        case PetState::running:
-            SDL_Log("Pet is idle");
-            break;
-        case PetState::falling:
-            SDL_Log("Pet is falling");
-            break;
-        case PetState::mousePicked:
-            SDL_Log("Pet is picked up by mouse");
+        case Direction::left:
+            virtualPos.x -= 0.01;
             break;
     }
 }

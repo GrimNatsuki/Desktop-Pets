@@ -1,4 +1,5 @@
 #pragma once
+#include "Timer.hpp"
 enum class PetState
 {
     idle,
@@ -18,9 +19,20 @@ struct PetProperties
     Vector2int displaySize;
 };
 
+enum class Direction
+{
+    left,
+    right
+};
+
 class PetEngine
 {
     PetProperties properties;
+    Uint64 lifeTime = 0;
+
+    Timer timer;
+
+
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     Vector2int windowSize;
@@ -40,10 +52,18 @@ class PetEngine
     void loadConfig();
     void loadTexture();
     void displayWindow();
-    void updatePos();
-    void destroyWindow();
 
+    Uint64 getLifeTime();
+    void updateTime();
+
+    void updatePos();
+    Vector2int getPos();
+
+    void destroyWindow();
     void switchState(PetState state);
+    PetState getState();
     void logState();
 
+    void fall();
+    void walk(Direction direction);
 };
