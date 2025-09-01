@@ -1,28 +1,28 @@
 #pragma once
 
+enum class TimerState
+{
+    active,
+    inactive
+};
+
 class Timer
 {
+    TimerState state = TimerState::inactive;
     Uint64 currentTime;
     Uint64 lastTime = 0;
     int timeCounterSeconds = 0;
 
+    Uint64 lifeTime = 0;
+    Uint64 timerEnd = 0;
+
     public:
-
-    int elapsedSeconds()
-    {
-        currentTime = SDL_GetTicks();
-        if (currentTime > lastTime + 1000)
-        {
-            timeCounterSeconds += 1;
-            lastTime = currentTime;
-            
-        }
-        return timeCounterSeconds;
-    }
-
-    Uint64 elapsedMilliSeconds()
-    {
-        return SDL_GetTicks();
-    }
+    Uint64 getLifeTime();
+    void updateLifeTime();
+    void startTimerMilliseconds(Uint64 milliseconds);
+    void updateState();
+    TimerState getState();
+    int elapsedSeconds();
+    Uint64 elapsedMilliSeconds();
 
 };

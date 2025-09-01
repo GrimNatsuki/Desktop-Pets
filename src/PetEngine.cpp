@@ -95,18 +95,6 @@ void PetEngine::fall()
     virtualPos.y += 0.1;
 }
 
-Uint64 PetEngine::getLifeTime()
-{
-    return lifeTime;
-}
-
-void PetEngine::updateTime()
-{
-    lifeTime = timer.elapsedMilliSeconds();
-}
-
-
-
 void PetEngine::walk(Direction direction)
 {
     switch (direction)

@@ -1,5 +1,4 @@
 #pragma once
-#include "Timer.hpp"
 enum class PetState
 {
     idle,
@@ -28,9 +27,6 @@ enum class Direction
 class PetEngine
 {
     PetProperties properties;
-    Uint64 lifeTime = 0;
-
-    Timer timer;
 
 
     SDL_Window *window = NULL;
@@ -53,8 +49,6 @@ class PetEngine
     void loadTexture();
     void displayWindow();
 
-    Uint64 getLifeTime();
-    void updateTime();
 
     void updatePos();
     Vector2int getPos();

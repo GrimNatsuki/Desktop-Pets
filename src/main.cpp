@@ -4,11 +4,13 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include "VectorStructs.hpp"
+#include "Timer.hpp"
 #include "PetEngine.hpp"
 
 int displayID;
 SDL_Rect displayBounds;
 
+Timer timer;
 PetEngine Pet;
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
@@ -23,7 +25,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     Pet.createWindow();
     Pet.loadTexture();
 
-    
+    timer.startTimerMilliseconds(3000);
 
     if (Pet.getState() == PetState::idle)
     {
@@ -47,8 +49,10 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
 
-    Pet.updateTime();
     Pet.updatePos();
+    timer.updateLifeTime();
+    timer.updateState();
+    
     //SDL_SetWindowPosition(window, windowPos.x, windowPos.y);
     /*
     if (virtualPos.y < displayBounds.h-windowHeight)
@@ -64,12 +68,12 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         virtualPos.y += 0.1;
     }
     */
-
     Pet.displayWindow();
     return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
+    std::cout<<timer.getLifeTime()<<std::endl;
     Pet.destroyWindow();
 }
