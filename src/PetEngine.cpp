@@ -1,3 +1,4 @@
+#include <random>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <nlohmann/json.hpp>
@@ -17,20 +18,34 @@ void PetEngine::createWindow()
     virtualPos = {static_cast<float>(windowPos.x), static_cast<float>(windowPos.y)};
 }
 
+
+size_t jsonFileSize = 0;
+void* jsonFileStream = nullptr;
+std::string jsonText;
+nlohmann::json config;
 void PetEngine::loadConfig()
 {
-    size_t size = 0;
-    void* jsonFileStream = SDL_LoadFile("conf/config.json", &size);
-    std::string jsonText(static_cast<char*> (jsonFileStream), size);
-    SDL_free(jsonFileStream);
-    nlohmann::json config = nlohmann::json::parse(jsonText);
-    properties.name = config["name"];
-    properties.version = config["version"];
-    properties.spriteFilePath = config["sprite_file_path"];
-    properties.spriteSize = {config["sprite_size"][0], config["sprite_size"][1]};
-    properties.displaySize = {config["display_size"][0], config["display_size"][1]};
-    windowSize = properties.displaySize;
+    try
+    {
+        jsonFileStream = SDL_LoadFile("conf/texConfig.json", &jsonFileSize);
+        jsonText.assign(static_cast<char*> (jsonFileStream), jsonFileSize);
+        SDL_free(jsonFileStream);
+        config = nlohmann::json::parse(jsonText);
+        properties.name = config["name"];
+        properties.version = config["version"];
+        properties.spriteFilePath = config["sprite_file_path"];
+        properties.spriteSize = {config["sprite_size"][0], config["sprite_size"][1]};
+        properties.displaySize = {config["display_size"][0], config["display_size"][1]};
+        windowSize = properties.displaySize;
+    }
+    catch (const std::exception& e)
+    {
+        SDL_Log("Config reload failed: %s", e.what());
+    }
+
 }
+
+
 
 void PetEngine::loadTexture()
 {
@@ -78,7 +93,7 @@ void PetEngine::logState()
     {
         case PetState::idle:        SDL_Log("Pet is idle"); break;
         case PetState::walking:     SDL_Log("Pet is walking"); break;
-        case PetState::running:     SDL_Log("Pet is idle"); break;
+        case PetState::running:     SDL_Log("Pet is running"); break;
         case PetState::falling:     SDL_Log("Pet is falling"); break;
         case PetState::mousePicked: SDL_Log("Pet is picked up by mouse"); break;
     }
@@ -95,15 +110,53 @@ void PetEngine::fall()
     virtualPos.y += 0.1;
 }
 
-void PetEngine::walk(Direction direction)
+void PetEngine::walk()
 {
-    switch (direction)
+    if (facingRight)
     {
-        case Direction::right:
-            virtualPos.x += 0.01;
-            break;
-        case Direction::left:
-            virtualPos.x -= 0.01;
-            break;
+        virtualPos.x += 0.001;
     }
+    else
+    {
+        virtualPos.x -= 0.001;
+    }
+
+}
+void PetEngine::run()
+{
+    if (facingRight)
+    {
+        virtualPos.x += 0.005;
+    }
+    else
+    {
+        virtualPos.x -= 0.005;
+    }
+
+}
+
+static std::random_device rd;
+static std::mt19937 gen(rd());
+static std::discrete_distribution<int> randInt {10, 60, 30};
+static std::bernoulli_distribution randBool(0.5);
+
+void PetEngine::randomSwitchState()
+{
+    int randomInt = randInt(gen);
+    switch(randomInt)
+    {
+        case 0:
+            state = PetState::idle;
+            break;
+        case 1:
+            if (state == PetState::idle) {state = PetState::walking;}
+            else {state = PetState::idle;}
+            break;
+        case 2:
+            if (state == PetState::idle) {state = PetState::running;}
+            else {state = PetState::idle;}
+    }
+
+    facingRight = randBool(gen);
+
 }

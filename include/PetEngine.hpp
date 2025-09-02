@@ -1,4 +1,6 @@
 #pragma once
+#include <SDL3/SDL.h>
+#include <nlohmann/json.hpp>
 enum class PetState
 {
     idle,
@@ -16,12 +18,6 @@ struct PetProperties
     std::string spriteFilePath;
     Vector2int spriteSize;
     Vector2int displaySize;
-};
-
-enum class Direction
-{
-    left,
-    right
 };
 
 class PetEngine
@@ -43,6 +39,8 @@ class PetEngine
 
     PetState state = PetState::idle;
 
+    bool facingRight = true;
+
     public:
     void createWindow();
     void loadConfig();
@@ -55,9 +53,11 @@ class PetEngine
 
     void destroyWindow();
     void switchState(PetState state);
+    void randomSwitchState();
     PetState getState();
     void logState();
 
     void fall();
-    void walk(Direction direction);
+    void walk();
+    void run();
 };

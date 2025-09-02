@@ -1,6 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <iostream>
 #include <string>
+#include <random>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include "VectorStructs.hpp"
@@ -10,8 +11,18 @@
 int displayID;
 SDL_Rect displayBounds;
 
+static std::random_device rd;
+static std::mt19937 gen(rd());
+static std::bernoulli_distribution randBool(0.5);
+//call d(gen) to return a boolean
+static std::uniform_int_distribution<int> randInt(1, 10000);
+//call intRand(gen) to return a random int
+static std::uniform_real_distribution<float> randFloat(0.0f, 1.0f);
+
+
 Timer timer;
 PetEngine Pet;
+
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
     SDL_SetAppMetadata("DesktopPet", "1.0", "com.grimnatsuki.DesktopPets");
@@ -24,13 +35,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     Pet.loadConfig();
     Pet.createWindow();
     Pet.loadTexture();
-
-    timer.startTimerMilliseconds(3000);
-
-    if (Pet.getState() == PetState::idle)
-    {
-        SDL_Log("Pet is idle");
-    }
 
     return SDL_APP_CONTINUE;
 }
@@ -52,7 +56,22 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     Pet.updatePos();
     timer.updateLifeTime();
     timer.updateState();
-    
+    if (timer.getState() == TimerState::inactive)
+    {
+        timer.startTimerMilliseconds((randInt(gen) % 5) * 1000);
+        Pet.randomSwitchState();
+        Pet.logState();
+    }
+
+    if (Pet.getState() == PetState::walking)
+    {
+        Pet.walk();
+    }
+    else if (Pet.getState() == PetState::running)
+    {
+        Pet.run();
+    }
+
     //SDL_SetWindowPosition(window, windowPos.x, windowPos.y);
     /*
     if (virtualPos.y < displayBounds.h-windowHeight)
