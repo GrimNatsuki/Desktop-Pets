@@ -7,6 +7,7 @@ enum class PetState
     walking,
     running,
     falling,
+    floatUp,
     mousePicked
     
 };
@@ -40,6 +41,7 @@ class PetEngine
     PetState state = PetState::idle;
 
     bool facingRight = true;
+    Vector2f velocity = {1, 0};
 
     public:
     void createWindow();
@@ -50,14 +52,21 @@ class PetEngine
 
     void updatePos();
     Vector2int getPos();
+    void setPosition(float xPos, float yPos);
 
     void destroyWindow();
     void switchState(PetState state);
+    void faceRight(bool facingRight);
     void randomSwitchState();
+    void randomSwitchDirection();
     PetState getState();
     void logState();
 
     void fall();
     void walk();
     void run();
+    void gravity();
+    void floatUp();
+
+    Vector2int getDisplaySize();
 };

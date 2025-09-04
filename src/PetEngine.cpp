@@ -70,6 +70,12 @@ void PetEngine::updatePos()
     SDL_SetWindowPosition(window, windowPos.x, windowPos.y);
 }
 
+void PetEngine::setPosition(float xPos, float yPos)
+{
+    virtualPos.x = xPos;
+    virtualPos.y = yPos;
+}
+
 void PetEngine::destroyWindow()
 {
     SDL_DestroyRenderer(renderer);
@@ -80,6 +86,11 @@ void PetEngine::destroyWindow()
 void PetEngine::switchState(PetState state)
 {
     this->state = state;
+}
+
+void PetEngine::faceRight(bool facingRight)
+{
+    this->facingRight = facingRight;
 }
 
 PetState PetEngine::getState()
@@ -96,6 +107,7 @@ void PetEngine::logState()
         case PetState::running:     SDL_Log("Pet is running"); break;
         case PetState::falling:     SDL_Log("Pet is falling"); break;
         case PetState::mousePicked: SDL_Log("Pet is picked up by mouse"); break;
+        case PetState::floatUp:     SDL_Log("Pet is floating up"); break;
     }
 }
 
@@ -105,20 +117,37 @@ Vector2int PetEngine::getPos()
     return windowPos;
 }
 
+void PetEngine::gravity()
+{
+    if (state == PetState::falling)
+    {
+        velocity.y += 0.5;
+    }
+    else if (state == PetState::idle)
+    {
+        velocity.y = 0;
+    }
+}
+
 void PetEngine::fall()
 {
-    virtualPos.y += 0.1;
+    virtualPos.y += velocity.y;
+}
+
+void PetEngine::floatUp()
+{
+    virtualPos.y -= 4;
 }
 
 void PetEngine::walk()
 {
     if (facingRight)
     {
-        virtualPos.x += 0.001;
+        virtualPos.x += velocity.x;
     }
     else
     {
-        virtualPos.x -= 0.001;
+        virtualPos.x -= velocity.x;
     }
 
 }
@@ -126,11 +155,11 @@ void PetEngine::run()
 {
     if (facingRight)
     {
-        virtualPos.x += 0.005;
+        virtualPos.x += velocity.x * 3;
     }
     else
     {
-        virtualPos.x -= 0.005;
+        virtualPos.x -= velocity.x * 3;
     }
 
 }
@@ -143,20 +172,31 @@ static std::bernoulli_distribution randBool(0.5);
 void PetEngine::randomSwitchState()
 {
     int randomInt = randInt(gen);
-    switch(randomInt)
+    if ((state != PetState::falling) && (state != PetState::mousePicked) && (state != PetState::floatUp))
     {
-        case 0:
-            state = PetState::idle;
-            break;
-        case 1:
-            if (state == PetState::idle) {state = PetState::walking;}
-            else {state = PetState::idle;}
-            break;
-        case 2:
-            if (state == PetState::idle) {state = PetState::running;}
-            else {state = PetState::idle;}
+        switch(randomInt)
+        {
+            case 0:
+                state = PetState::idle;
+                break;
+            case 1:
+                if (state == PetState::idle) {state = PetState::walking;}
+                else {state = PetState::idle;}
+                break;
+            case 2:
+                if (state == PetState::idle) {state = PetState::running;}
+                else {state = PetState::idle;}
+        }
     }
 
-    facingRight = randBool(gen);
+}
 
+void PetEngine::randomSwitchDirection()
+{
+    facingRight = randBool(gen);
+}
+
+Vector2int PetEngine::getDisplaySize()
+{
+    return properties.displaySize;
 }
