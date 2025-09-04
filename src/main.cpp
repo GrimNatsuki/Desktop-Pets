@@ -30,8 +30,12 @@ static std::uniform_real_distribution<float> randFloat(0.0f, 1.0f);
 
 
 Timer timer;
-Timer animationTimer;
+Timer appTimer;
 int appFramesPerSecond = 60;
+
+Timer animationTimer;
+int animationFramesPerSecond = 2;
+int animationFramesCounter = 0;
 
 PetEngine Pet;
 Vector2f mousePos;
@@ -43,8 +47,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 
     SDL_GetDisplays(&displayID);
     SDL_GetDisplayBounds(displayID, &displayBounds);
-
-    
 
     Pet.loadConfig();
     Pet.createWindow();
@@ -65,7 +67,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     if (event->button.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
     {
         Pet.switchState(PetState::mousePicked);
-        Pet.logState();
+        //Pet.logState();
         //std::cout<<"Mouse clicked"<<std::endl;
     }
     else if (event->button.type == SDL_EVENT_MOUSE_BUTTON_UP)
@@ -81,15 +83,17 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 {
     timer.updateLifeTime();
     timer.updateState();
+    appTimer.updateLifeTime();
+    appTimer.updateState();
     animationTimer.updateLifeTime();
-    animationTimer.updateState();    
+    animationTimer.updateState();
     SDL_GetGlobalMouseState(&mousePos.x, &mousePos.y);
 
     if (timer.getState() == TimerState::inactive && timer.getLifeTime() > 3000)
     {
         timer.startTimerMilliseconds((1 + (randInt(gen) % 4)) * 1000);
         Pet.randomSwitchState();
-        ///Pet.logState();
+        //Pet.logState();
         if (Pet.getPos().x < marginBounds.left)
         {
             Pet.faceRight(true);
@@ -104,9 +108,9 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         }
     }
 
-    if (animationTimer.getState() == TimerState::inactive)
+    if (appTimer.getState() == TimerState::inactive)
     {
-        animationTimer.startTimerMilliseconds(1000/appFramesPerSecond);
+        appTimer.startTimerMilliseconds(1000/appFramesPerSecond);
         
         Pet.updatePos();
 
@@ -155,6 +159,50 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
         Pet.displayWindow();
     }
+
+    if (animationTimer.getState() == TimerState::inactive)
+    {
+        switch (Pet.getState())
+        {
+            case PetState::idle:
+                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
+                Pet.setSprite(animationFramesCounter % 4);
+                animationFramesCounter++;
+                break;
+
+            case PetState::walking:
+                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
+                Pet.setSprite(6 + animationFramesCounter % 2);
+                animationFramesCounter++;
+                break;
+
+            case PetState::running:
+                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
+                Pet.setSprite(6 + animationFramesCounter % 2);
+                animationFramesCounter++;
+                break;
+
+            case PetState::falling:
+                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
+                Pet.setSprite(4 + animationFramesCounter % 2);
+                animationFramesCounter++;
+                break;
+
+            case PetState::floatUp:
+                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
+                Pet.setSprite(animationFramesCounter % 4);
+                animationFramesCounter++;
+                break;
+
+            case PetState::mousePicked:
+                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
+                Pet.setSprite(4 + animationFramesCounter % 2);
+                animationFramesCounter++;
+                break;
+        }
+
+    }
+
     return SDL_APP_CONTINUE;
 
 }

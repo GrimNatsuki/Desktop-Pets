@@ -1,4 +1,6 @@
+#include <iostream>
 #include <random>
+#include <vector>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <nlohmann/json.hpp>
@@ -36,30 +38,68 @@ void PetEngine::loadConfig()
         properties.spriteFilePath = config["sprite_file_path"];
         properties.spriteSize = {config["sprite_size"][0], config["sprite_size"][1]};
         properties.displaySize = {config["display_size"][0], config["display_size"][1]};
+        properties.spriteMapRows = config["sprite_map_rows"];
+        properties.spriteMapColumns = config["sprite_map_columns"];
+
+        //properties.idleSpritesIndex = config["animation_sprite_index"]["idle_sprites"];
+        for (int i = 0; i<config["animation_sprite_index"]["idle_sprites"].size(); i++)
+        {
+            properties.idleSpritesIndex.push_back(config["animation_sprite_index"]["idle_sprites"][i]);
+        }
         windowSize = properties.displaySize;
+        center = {windowSize.x, 0};
+        
     }
     catch (const std::exception& e)
     {
         SDL_Log("Config reload failed: %s", e.what());
     }
-
 }
 
-
+SDL_FRect tempRect;
 
 void PetEngine::loadTexture()
 {
     surface = IMG_Load(properties.spriteFilePath.c_str());
     tex = SDL_CreateTextureFromSurface(renderer, surface);
-    srcRect = {0, 0, static_cast<float>(properties.spriteSize.x), static_cast<float>(properties.spriteSize.y)};
+
+    for (int i = 0; i<properties.spriteMapRows; i++)
+    {
+        for (int j = 0; j<properties.spriteMapColumns; j++)
+        {
+            tempRect = {j*128, i*128, 128, 128};
+            spriteRects.push_back(tempRect);
+        }
+    }
+    srcRect = spriteRects[0];
     dsRect = {0, 0, static_cast<float>(properties.displaySize.x), static_cast<float>(properties.displaySize.y)};
+}
+
+void PetEngine::setSprite(int spriteIndex)
+{
+    if (spriteIndex < 0 || spriteIndex > spriteRects.size() - 1)
+    {
+        SDL_Log("Unable to load sprite. Cause: index is out of range");
+    }
+    else
+    {
+        srcRect = spriteRects[spriteIndex];
+    }
 }
 
 void PetEngine::displayWindow()
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
-    SDL_RenderTexture(renderer, tex, &srcRect, &dsRect);
+    if (facingRight)
+    {
+        SDL_RenderTextureRotated(renderer, tex, &srcRect, &dsRect, 0, &center, SDL_FLIP_HORIZONTAL);
+    }
+    else
+    {
+        SDL_RenderTextureRotated(renderer, tex, &srcRect, &dsRect, 0, &center, SDL_FLIP_NONE);
+    }
+
     SDL_RenderPresent(renderer);
 }
 

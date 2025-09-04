@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
+#include <vector>
 enum class PetState
 {
     idle,
@@ -19,12 +20,20 @@ struct PetProperties
     std::string spriteFilePath;
     Vector2int spriteSize;
     Vector2int displaySize;
+
+    int spriteMapRows;
+    int spriteMapColumns;
+
+    std::vector<int> idleSpritesIndex;
+    std::vector<int> walkingSpritesIndex;
+    std::vector<int> runningSpriteIndex;
+    std::vector<int> fallingSpriteIndex;
+    std::vector<int> mousePickedSpriteIndex;
 };
 
 class PetEngine
 {
     PetProperties properties;
-
 
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
@@ -34,6 +43,9 @@ class PetEngine
     SDL_Texture *tex = NULL;
     SDL_FRect srcRect;
     SDL_FRect dsRect;
+    SDL_FPoint center;
+
+    std::vector<SDL_FRect> spriteRects;
 
     Vector2int windowPos;
     Vector2f virtualPos;
@@ -49,6 +61,8 @@ class PetEngine
     void loadTexture();
     void displayWindow();
 
+    void setSprite(int spriteIndex);
+    void idleAnimate(float framesPerSecond);
 
     void updatePos();
     Vector2int getPos();
