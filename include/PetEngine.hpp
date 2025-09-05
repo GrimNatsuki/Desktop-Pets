@@ -22,6 +22,7 @@ struct PetProperties
     Vector2int displaySize;
 
     std::string exitButtonFilePath;
+    Vector2int exitButtonSize;
 
     int spriteMapRows;
     int spriteMapColumns;
@@ -103,4 +104,5 @@ class PetEngine
     int getMousePickedSpriteIndex(int index);
 
     int getSpriteIndex(int index);
+    Vector2int getExitButtonSize();
 };

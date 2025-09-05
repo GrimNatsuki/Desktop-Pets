@@ -68,7 +68,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     if (event->button.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
     {
 
-        if (Pet.showingExitButton && (windowMousePos.x > Pet.getDisplaySize().x-16) && (windowMousePos.y < 16))
+        if (Pet.showingExitButton && (windowMousePos.x > Pet.getDisplaySize().x-Pet.getExitButtonSize().x) && (windowMousePos.y < Pet.getExitButtonSize().y))
         {
             return SDL_APP_SUCCESS;
         }
@@ -177,7 +177,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
                 break;
 
             case PetState::mousePicked:
-                Pet.setPosition(globalMousePos.x - 64, globalMousePos.y - 8);
+                Pet.setPosition(globalMousePos.x - Pet.getDisplaySize().x/2, globalMousePos.y - 8);
                 break;
         }
 
@@ -186,7 +186,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     if (animationTimer.getState() == TimerState::inactive)
     {
-        std::cout<<windowMousePos.x<<", "<<windowMousePos.y<<std::endl;
         animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
         Pet.setSprite(Pet.getSpriteIndex(animationFramesCounter));
         animationFramesCounter++;

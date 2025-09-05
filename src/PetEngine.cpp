@@ -38,11 +38,13 @@ void PetEngine::loadConfig()
         properties.name = petConfig["name"];
         properties.version = petConfig["version"];
         properties.spriteFilePath = petConfig["sprite_file_path"];
-        properties.exitButtonFilePath = petConfig["exit_button_file_path"];
         properties.spriteSize = {petConfig["sprite_size"][0], petConfig["sprite_size"][1]};
         properties.displaySize = {petConfig["display_size"][0], petConfig["display_size"][1]};
         properties.spriteMapRows = petConfig["sprite_map_rows"];
         properties.spriteMapColumns = petConfig["sprite_map_columns"];
+
+        properties.exitButtonFilePath = petConfig["exit_button_file_path"];
+        properties.exitButtonSize = {petConfig["exit_button_size"][0], petConfig["exit_button_size"][1]};
 
         for (int i = 0; i<petConfig["animation_sprite_index"]["idle_sprites"].size(); i++)
         {
@@ -99,8 +101,8 @@ void PetEngine::loadTexture()
     srcRect = spriteRects[0];
     dsRect = {0, 0, static_cast<float>(properties.displaySize.x), static_cast<float>(properties.displaySize.y)};
 
-    buttonSrcRect = {0, 0, 16, 16};
-    buttonDsRect = {properties.displaySize.x - 16, 0, 16, 16};
+    buttonSrcRect = {0, 0, properties.exitButtonSize.x, properties.exitButtonSize.y};
+    buttonDsRect = {properties.displaySize.x - properties.exitButtonSize.x, 0, properties.exitButtonSize.x, properties.exitButtonSize.y};
 
 }
 
@@ -135,7 +137,6 @@ void PetEngine::displayWindow()
         if (showingExitButton)
         {
             SDL_RenderTextureRotated(renderer, buttonTex, &buttonSrcRect, &buttonDsRect, 0, &center, SDL_FLIP_NONE);
-    
         }
     }
 
@@ -344,5 +345,10 @@ int PetEngine::getSpriteIndex(int index)
             return properties.mousePickedSpritesIndices[index];
             break;
     }
+}
+
+Vector2int PetEngine::getExitButtonSize()
+{
+    return properties.exitButtonSize;
 }
 

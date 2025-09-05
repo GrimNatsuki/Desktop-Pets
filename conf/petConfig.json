@@ -14,6 +14,6 @@
         "falling_sprites": [4, 5],
         "mouse_picked_sprites": [4, 5]
     },
-    "exit_button_file_path": "tex/exitButton.bmp"
-    
+    "exit_button_file_path": "tex/exitButton.bmp",
+    "exit_button_size": [16, 16]
 }
