@@ -1,5 +1,5 @@
 configure_file(
-  input: 'texConfig.json',
-  output: 'texConfig.json',
+  input: 'petConfig.json',
+  output: 'petConfig.json',
   copy: true
 )

@@ -3,3 +3,9 @@ configure_file(
   output: 'CartethyiaSpriteMap.png',
   copy: true
 )
+
+configure_file(
+  input: 'exitButton.bmp',
+  output: 'exitButton.bmp',
+  copy: true
+)

@@ -14,6 +14,8 @@ void PetEngine::createWindow()
     SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, windowSize.x);
     SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, windowSize.y);
     SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_TRANSPARENT_BOOLEAN, true);
+    SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN, true);
+    SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_ALWAYS_ON_TOP_BOOLEAN, true);
     window = SDL_CreateWindowWithProperties(props);
     renderer = SDL_CreateRenderer(window, NULL);
     SDL_GetWindowPosition(window, &windowPos.x, &windowPos.y);
@@ -24,43 +26,44 @@ void PetEngine::createWindow()
 size_t jsonFileSize = 0;
 void* jsonFileStream = nullptr;
 std::string jsonText;
-nlohmann::json config;
+nlohmann::json petConfig;
 void PetEngine::loadConfig()
 {
     try
     {
-        jsonFileStream = SDL_LoadFile("conf/texConfig.json", &jsonFileSize);
+        jsonFileStream = SDL_LoadFile("conf/petConfig.json", &jsonFileSize);
         jsonText.assign(static_cast<char*> (jsonFileStream), jsonFileSize);
         SDL_free(jsonFileStream);
-        config = nlohmann::json::parse(jsonText);
-        properties.name = config["name"];
-        properties.version = config["version"];
-        properties.spriteFilePath = config["sprite_file_path"];
-        properties.spriteSize = {config["sprite_size"][0], config["sprite_size"][1]};
-        properties.displaySize = {config["display_size"][0], config["display_size"][1]};
-        properties.spriteMapRows = config["sprite_map_rows"];
-        properties.spriteMapColumns = config["sprite_map_columns"];
+        petConfig = nlohmann::json::parse(jsonText);
+        properties.name = petConfig["name"];
+        properties.version = petConfig["version"];
+        properties.spriteFilePath = petConfig["sprite_file_path"];
+        properties.exitButtonFilePath = petConfig["exit_button_file_path"];
+        properties.spriteSize = {petConfig["sprite_size"][0], petConfig["sprite_size"][1]};
+        properties.displaySize = {petConfig["display_size"][0], petConfig["display_size"][1]};
+        properties.spriteMapRows = petConfig["sprite_map_rows"];
+        properties.spriteMapColumns = petConfig["sprite_map_columns"];
 
-        for (int i = 0; i<config["animation_sprite_index"]["idle_sprites"].size(); i++)
+        for (int i = 0; i<petConfig["animation_sprite_index"]["idle_sprites"].size(); i++)
         {
-            properties.idleSpritesIndices.push_back(config["animation_sprite_index"]["idle_sprites"][i]);
+            properties.idleSpritesIndices.push_back(petConfig["animation_sprite_index"]["idle_sprites"][i]);
         }
-        for (int i = 0; i<config["animation_sprite_index"]["walking_sprites"].size(); i++)
+        for (int i = 0; i<petConfig["animation_sprite_index"]["walking_sprites"].size(); i++)
         {
-            properties.walkingSpritesIndices.push_back(config["animation_sprite_index"]["walking_sprites"][i]);
+            properties.walkingSpritesIndices.push_back(petConfig["animation_sprite_index"]["walking_sprites"][i]);
         }
-        for (int i = 0; i<config["animation_sprite_index"]["running_sprites"].size(); i++)
+        for (int i = 0; i<petConfig["animation_sprite_index"]["running_sprites"].size(); i++)
         {
-            properties.runningSpritesIndices.push_back(config["animation_sprite_index"]["running_sprites"][i]);
+            properties.runningSpritesIndices.push_back(petConfig["animation_sprite_index"]["running_sprites"][i]);
         }
 
-        for (int i = 0; i<config["animation_sprite_index"]["falling_sprites"].size(); i++)
+        for (int i = 0; i<petConfig["animation_sprite_index"]["falling_sprites"].size(); i++)
         {
-            properties.fallingSpritesIndices.push_back(config["animation_sprite_index"]["falling_sprites"][i]);
+            properties.fallingSpritesIndices.push_back(petConfig["animation_sprite_index"]["falling_sprites"][i]);
         }
-        for (int i = 0; i<config["animation_sprite_index"]["mouse_picked_sprites"].size(); i++)
+        for (int i = 0; i<petConfig["animation_sprite_index"]["mouse_picked_sprites"].size(); i++)
         {
-            properties.mousePickedSpritesIndices.push_back(config["animation_sprite_index"]["mouse_picked_sprites"][i]);
+            properties.mousePickedSpritesIndices.push_back(petConfig["animation_sprite_index"]["mouse_picked_sprites"][i]);
         }
 
         windowSize = properties.displaySize;
@@ -79,17 +82,26 @@ void PetEngine::loadTexture()
 {
     surface = IMG_Load(properties.spriteFilePath.c_str());
     tex = SDL_CreateTextureFromSurface(renderer, surface);
+    buttonSurface = IMG_Load(properties.exitButtonFilePath.c_str());
+    buttonTex = SDL_CreateTextureFromSurface(renderer, buttonSurface);
 
     for (int i = 0; i<properties.spriteMapRows; i++)
     {
         for (int j = 0; j<properties.spriteMapColumns; j++)
         {
-            tempRect = {j*128, i*128, 128, 128};
+            tempRect = {j*properties.spriteSize.x, 
+                        i*properties.spriteSize.y, 
+                        properties.spriteSize.x, 
+                        properties.spriteSize.y};
             spriteRects.push_back(tempRect);
         }
     }
     srcRect = spriteRects[0];
     dsRect = {0, 0, static_cast<float>(properties.displaySize.x), static_cast<float>(properties.displaySize.y)};
+
+    buttonSrcRect = {0, 0, 16, 16};
+    buttonDsRect = {properties.displaySize.x - 16, 0, 16, 16};
+
 }
 
 void PetEngine::setSprite(int spriteIndex)
@@ -111,10 +123,20 @@ void PetEngine::displayWindow()
     if (facingRight)
     {
         SDL_RenderTextureRotated(renderer, tex, &srcRect, &dsRect, 0, &center, SDL_FLIP_HORIZONTAL);
+        if (showingExitButton)
+        {
+            SDL_RenderTextureRotated(renderer, buttonTex, &buttonSrcRect, &buttonDsRect, 0, &center, SDL_FLIP_HORIZONTAL);
+    
+        }
     }
     else
     {
         SDL_RenderTextureRotated(renderer, tex, &srcRect, &dsRect, 0, &center, SDL_FLIP_NONE);
+        if (showingExitButton)
+        {
+            SDL_RenderTextureRotated(renderer, buttonTex, &buttonSrcRect, &buttonDsRect, 0, &center, SDL_FLIP_NONE);
+    
+        }
     }
 
     SDL_RenderPresent(renderer);

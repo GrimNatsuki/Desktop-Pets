@@ -22,11 +22,11 @@ RectBounds marginBounds;
 
 static std::random_device rd;
 static std::mt19937 gen(rd());
-static std::bernoulli_distribution randBool(0.5);
+//static std::bernoulli_distribution randBool(0.5);
 //call d(gen) to return a boolean
 static std::uniform_int_distribution<int> randInt(0, 10000);
 //call intRand(gen) to return a random int
-static std::uniform_real_distribution<float> randFloat(0.0f, 1.0f);
+//static std::uniform_real_distribution<float> randFloat(0.0f, 1.0f);
 
 
 Timer timer;
@@ -38,7 +38,8 @@ int animationFramesPerSecond = 2;
 int animationFramesCounter = 0;
 
 PetEngine Pet;
-Vector2f mousePos;
+Vector2f globalMousePos;
+Vector2f windowMousePos;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
@@ -54,8 +55,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 
     marginBounds = {displayBounds.w/3, displayBounds.w*2/3, 0, (displayBounds.h-Pet.getDisplaySize().y)};
 
-    std::cout<<Pet.getWalkingSpriteIndex(4)<<std::endl;
-
     return SDL_APP_CONTINUE;
 }
 
@@ -68,14 +67,36 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     }
     if (event->button.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
     {
-        Pet.switchState(PetState::mousePicked);
+
+        if (Pet.showingExitButton && (windowMousePos.x > Pet.getDisplaySize().x-16) && (windowMousePos.y < 16))
+        {
+            return SDL_APP_SUCCESS;
+        }
+        else if (event->button.button == SDL_BUTTON_LEFT)
+        {
+            Pet.switchState(PetState::mousePicked);
+            Pet.showingExitButton = false;
+        }
+        else if (event->button.button == SDL_BUTTON_RIGHT)
+        {
+            Pet.showingExitButton = true;
+        }
+
         //Pet.logState();
         //std::cout<<"Mouse clicked"<<std::endl;
     }
     else if (event->button.type == SDL_EVENT_MOUSE_BUTTON_UP)
     {
-        Pet.switchState(PetState::idle);
-        //std::cout<<"Mouse released"<<std::endl;
+        if (Pet.getPos().y>marginBounds.down)
+        {
+            Pet.switchState(PetState::floatUp);
+        }
+        else
+        {
+            Pet.switchState(PetState::idle);
+        }
+        
+
     }
     return SDL_APP_CONTINUE; 
 }
@@ -89,7 +110,8 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     appTimer.updateState();
     animationTimer.updateLifeTime();
     animationTimer.updateState();
-    SDL_GetGlobalMouseState(&mousePos.x, &mousePos.y);
+    SDL_GetGlobalMouseState(&globalMousePos.x, &globalMousePos.y);
+    SDL_GetMouseState(&windowMousePos.x, &windowMousePos.y);
 
     if (timer.getState() == TimerState::inactive && timer.getLifeTime() > 3000)
     {
@@ -155,7 +177,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
                 break;
 
             case PetState::mousePicked:
-                Pet.setPosition(mousePos.x - 64, mousePos.y - 8);
+                Pet.setPosition(globalMousePos.x - 64, globalMousePos.y - 8);
                 break;
         }
 
@@ -164,6 +186,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     if (animationTimer.getState() == TimerState::inactive)
     {
+        std::cout<<windowMousePos.x<<", "<<windowMousePos.y<<std::endl;
         animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
         Pet.setSprite(Pet.getSpriteIndex(animationFramesCounter));
         animationFramesCounter++;

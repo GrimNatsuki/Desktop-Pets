@@ -21,6 +21,8 @@ struct PetProperties
     Vector2int spriteSize;
     Vector2int displaySize;
 
+    std::string exitButtonFilePath;
+
     int spriteMapRows;
     int spriteMapColumns;
 
@@ -45,6 +47,11 @@ class PetEngine
     SDL_FRect dsRect;
     SDL_FPoint center;
 
+    SDL_Surface *buttonSurface = NULL;
+    SDL_Texture *buttonTex = NULL;
+    SDL_FRect buttonSrcRect;
+    SDL_FRect buttonDsRect;
+
     std::vector<SDL_FRect> spriteRects;
 
     Vector2int windowPos;
@@ -52,10 +59,15 @@ class PetEngine
 
     PetState state = PetState::idle;
 
-    bool facingRight = true;
+    
     Vector2f velocity = {1, 0};
 
+    
+
     public:
+    bool facingRight = true;
+    bool showingExitButton = false;
+
     void createWindow();
     void loadConfig();
     void loadTexture();
