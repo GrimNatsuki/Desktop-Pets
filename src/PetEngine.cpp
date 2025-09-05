@@ -41,11 +41,28 @@ void PetEngine::loadConfig()
         properties.spriteMapRows = config["sprite_map_rows"];
         properties.spriteMapColumns = config["sprite_map_columns"];
 
-        //properties.idleSpritesIndex = config["animation_sprite_index"]["idle_sprites"];
         for (int i = 0; i<config["animation_sprite_index"]["idle_sprites"].size(); i++)
         {
-            properties.idleSpritesIndex.push_back(config["animation_sprite_index"]["idle_sprites"][i]);
+            properties.idleSpritesIndices.push_back(config["animation_sprite_index"]["idle_sprites"][i]);
         }
+        for (int i = 0; i<config["animation_sprite_index"]["walking_sprites"].size(); i++)
+        {
+            properties.walkingSpritesIndices.push_back(config["animation_sprite_index"]["walking_sprites"][i]);
+        }
+        for (int i = 0; i<config["animation_sprite_index"]["running_sprites"].size(); i++)
+        {
+            properties.runningSpritesIndices.push_back(config["animation_sprite_index"]["running_sprites"][i]);
+        }
+
+        for (int i = 0; i<config["animation_sprite_index"]["falling_sprites"].size(); i++)
+        {
+            properties.fallingSpritesIndices.push_back(config["animation_sprite_index"]["falling_sprites"][i]);
+        }
+        for (int i = 0; i<config["animation_sprite_index"]["mouse_picked_sprites"].size(); i++)
+        {
+            properties.mousePickedSpritesIndices.push_back(config["animation_sprite_index"]["mouse_picked_sprites"][i]);
+        }
+
         windowSize = properties.displaySize;
         center = {windowSize.x, 0};
         
@@ -120,7 +137,6 @@ void PetEngine::destroyWindow()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    SDL_Log("Pet Engine quit");
 }
 
 void PetEngine::switchState(PetState state)
@@ -240,3 +256,71 @@ Vector2int PetEngine::getDisplaySize()
 {
     return properties.displaySize;
 }
+
+int PetEngine::getIdleSpriteIndex(int index)
+{
+    index = index % properties.idleSpritesIndices.size();
+    return properties.idleSpritesIndices[index];
+}
+
+int PetEngine::getWalkingSpriteIndex(int index)
+{
+
+    index = index % properties.walkingSpritesIndices.size();
+    return properties.walkingSpritesIndices[index];
+}
+
+int PetEngine::getRunningSpriteIndex(int index)
+{
+    index = index % properties.runningSpritesIndices.size();
+    return properties.runningSpritesIndices[index];
+}
+
+int PetEngine::getFallingSpriteIndex(int index)
+{
+    index = index % properties.fallingSpritesIndices.size();
+    return properties.fallingSpritesIndices[index];
+}
+
+int PetEngine::getMousePickedSpriteIndex(int index)
+{
+    index = index % properties.mousePickedSpritesIndices.size();
+    return properties.mousePickedSpritesIndices[index];
+}
+
+int PetEngine::getSpriteIndex(int index)
+{
+    switch (state)
+    {
+        case PetState::idle:
+            index = index % properties.idleSpritesIndices.size();
+            return properties.idleSpritesIndices[index];
+            break;
+
+        case PetState::walking:
+            index = index % properties.walkingSpritesIndices.size();
+            return properties.walkingSpritesIndices[index];
+            break;
+
+        case PetState::running:
+            index = index % properties.runningSpritesIndices.size();
+            return properties.runningSpritesIndices[index];
+            break;
+
+        case PetState::falling:
+            index = index % properties.fallingSpritesIndices.size();
+            return properties.fallingSpritesIndices[index];
+            break;
+
+        case PetState::floatUp:
+            index = index % properties.idleSpritesIndices.size();
+            return properties.idleSpritesIndices[index];
+            break;
+            
+        case PetState::mousePicked:
+            index = index % properties.mousePickedSpritesIndices.size();
+            return properties.mousePickedSpritesIndices[index];
+            break;
+    }
+}
+

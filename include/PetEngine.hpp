@@ -24,11 +24,11 @@ struct PetProperties
     int spriteMapRows;
     int spriteMapColumns;
 
-    std::vector<int> idleSpritesIndex;
-    std::vector<int> walkingSpritesIndex;
-    std::vector<int> runningSpriteIndex;
-    std::vector<int> fallingSpriteIndex;
-    std::vector<int> mousePickedSpriteIndex;
+    std::vector<int> idleSpritesIndices;
+    std::vector<int> walkingSpritesIndices;
+    std::vector<int> runningSpritesIndices;
+    std::vector<int> fallingSpritesIndices;
+    std::vector<int> mousePickedSpritesIndices;
 };
 
 class PetEngine
@@ -83,4 +83,12 @@ class PetEngine
     void floatUp();
 
     Vector2int getDisplaySize();
+
+    int getIdleSpriteIndex(int index);
+    int getWalkingSpriteIndex(int index);
+    int getRunningSpriteIndex(int index);
+    int getFallingSpriteIndex(int index);
+    int getMousePickedSpriteIndex(int index);
+
+    int getSpriteIndex(int index);
 };

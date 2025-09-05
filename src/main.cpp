@@ -54,6 +54,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 
     marginBounds = {displayBounds.w/3, displayBounds.w*2/3, 0, (displayBounds.h-Pet.getDisplaySize().y)};
 
+    std::cout<<Pet.getWalkingSpriteIndex(4)<<std::endl;
+
     return SDL_APP_CONTINUE;
 }
 
@@ -61,7 +63,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 {
     if (event->type == SDL_EVENT_QUIT) 
     {
-        SDL_Log("App1 terminated by user");
+        //SDL_Log("App1 terminated by user");
         return SDL_APP_SUCCESS;
     }
     if (event->button.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
@@ -162,45 +164,9 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     if (animationTimer.getState() == TimerState::inactive)
     {
-        switch (Pet.getState())
-        {
-            case PetState::idle:
-                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
-                Pet.setSprite(animationFramesCounter % 4);
-                animationFramesCounter++;
-                break;
-
-            case PetState::walking:
-                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
-                Pet.setSprite(6 + animationFramesCounter % 2);
-                animationFramesCounter++;
-                break;
-
-            case PetState::running:
-                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
-                Pet.setSprite(6 + animationFramesCounter % 2);
-                animationFramesCounter++;
-                break;
-
-            case PetState::falling:
-                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
-                Pet.setSprite(4 + animationFramesCounter % 2);
-                animationFramesCounter++;
-                break;
-
-            case PetState::floatUp:
-                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
-                Pet.setSprite(animationFramesCounter % 4);
-                animationFramesCounter++;
-                break;
-
-            case PetState::mousePicked:
-                animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
-                Pet.setSprite(4 + animationFramesCounter % 2);
-                animationFramesCounter++;
-                break;
-        }
-
+        animationTimer.startTimerMilliseconds(1000/animationFramesPerSecond);
+        Pet.setSprite(Pet.getSpriteIndex(animationFramesCounter));
+        animationFramesCounter++;
     }
 
     return SDL_APP_CONTINUE;
@@ -209,6 +175,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
-    std::cout<<timer.getLifeTime()<<std::endl;
+    //std::cout<<timer.getLifeTime()<<std::endl;
     Pet.destroyWindow();
 }
