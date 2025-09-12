@@ -5,10 +5,13 @@ ar = 'x86_64-w64-mingw32-ar'
 windres = 'x86_64-w64-mingw32-windres'
 strip = 'x86_64-w64-mingw32-strip'
 exe_wrapper = 'wine64'
-pkgconfig = 'pkg-config'
+pkg-config = 'pkg-config'
 
 [host_machine]
 system = 'windows'
 cpu_family = 'x86_64'
 cpu = 'x86_64'
 endian = 'little'
+
+[built-in-options]
+prefix = '/usr/x86_64-w64-mingw32'
