@@ -1,4 +1,5 @@
 # Desktop Pets
+---
 *Customizable animated desktop pets!*
 ---
 ## Platforms
