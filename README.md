@@ -7,9 +7,9 @@
 - Linux
 ---
 ## External Dependencies
-- ['SDL3'](https://github.com/libsdl-org/SDL/releases)
-- ['SDL3_image'](https://github.com/libsdl-org/SDL_image/releases) 
-- ['nlohmann'](https://github.com/nlohmann/json/releases)
+- [SDL3](https://github.com/libsdl-org/SDL/releases)
+- [SDL3_image](https://github.com/libsdl-org/SDL_image/releases) 
+- [nlohmann](https://github.com/nlohmann/json/releases)
 ---
 ## Installation
 *Please do note that only pre-release builds are available currently*
