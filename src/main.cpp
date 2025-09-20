@@ -22,11 +22,8 @@ RectBounds marginBounds;
 
 static std::random_device rd;
 static std::mt19937 gen(rd());
-//static std::bernoulli_distribution randBool(0.5);
-//call d(gen) to return a boolean
 static std::uniform_int_distribution<int> randInt(0, 10000);
-//call intRand(gen) to return a random int
-//static std::uniform_real_distribution<float> randFloat(0.0f, 1.0f);
+
 
 
 Timer timer;
@@ -83,7 +80,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
         }
 
         //Pet.logState();
-        //std::cout<<"Mouse clicked"<<std::endl;
     }
     else if (event->button.type == SDL_EVENT_MOUSE_BUTTON_UP)
     {
