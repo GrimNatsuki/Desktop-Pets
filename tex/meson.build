@@ -9,3 +9,9 @@ configure_file(
   output: 'exitButton.bmp',
   copy: true
 )
+
+configure_file(
+  input: 'reloadButton.png',
+  output: 'reloadButton.png',
+  copy: true
+)

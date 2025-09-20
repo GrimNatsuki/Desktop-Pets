@@ -22,7 +22,8 @@ struct PetProperties
     Vector2int displaySize;
 
     std::string exitButtonFilePath;
-    Vector2int exitButtonSize;
+    std::string reloadButtonFilePath;
+
 
     int spriteMapRows;
     int spriteMapColumns;
@@ -48,10 +49,17 @@ class PetEngine
     SDL_FRect dsRect;
     SDL_FPoint center;
 
-    SDL_Surface *buttonSurface = NULL;
-    SDL_Texture *buttonTex = NULL;
-    SDL_FRect buttonSrcRect;
-    SDL_FRect buttonDsRect;
+    SDL_Surface *exitButtonSurface = NULL;
+    SDL_Texture *exitButtonTex = NULL;
+    SDL_FRect exitButtonSrcRect;
+    SDL_FRect exitButtonDsRect;
+
+    SDL_Surface *reloadButtonSurface = NULL;
+    SDL_Texture *reloadButtonTex = NULL;
+    SDL_FRect reloadButtonSrcRect;
+    SDL_FRect reloadButtonDsRect;
+
+    
 
     std::vector<SDL_FRect> spriteRects;
 
@@ -104,5 +112,4 @@ class PetEngine
     int getMousePickedSpriteIndex(int index);
 
     int getSpriteIndex(int index);
-    Vector2int getExitButtonSize();
 };

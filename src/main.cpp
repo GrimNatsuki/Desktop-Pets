@@ -65,9 +65,24 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     if (event->button.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
     {
 
-        if (Pet.showingExitButton && (windowMousePos.x > Pet.getDisplaySize().x-Pet.getExitButtonSize().x) && (windowMousePos.y < Pet.getExitButtonSize().y))
+        if (Pet.showingExitButton)
         {
-            return SDL_APP_SUCCESS;
+            if ((windowMousePos.x > Pet.getDisplaySize().x-16) && (windowMousePos.y < 16))
+            {
+                return SDL_APP_SUCCESS;
+            }
+            else if ((windowMousePos.x > Pet.getDisplaySize().x-32) && (windowMousePos.x < Pet.getDisplaySize().x-16) && (windowMousePos.y < 16))
+            {
+                Pet.destroyWindow();
+                Pet.loadConfig();
+                Pet.createWindow();
+                Pet.loadTexture();
+            }
+            else
+            {
+                Pet.showingExitButton = false;
+            }
+            
         }
         else if (event->button.button == SDL_BUTTON_LEFT)
         {

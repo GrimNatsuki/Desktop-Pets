@@ -44,7 +44,8 @@ void PetEngine::loadConfig()
         properties.spriteMapColumns = petConfig["sprite_map_columns"];
 
         properties.exitButtonFilePath = petConfig["exit_button_file_path"];
-        properties.exitButtonSize = {petConfig["exit_button_size"][0], petConfig["exit_button_size"][1]};
+        properties.reloadButtonFilePath = petConfig["reload_button_file_path"];
+
 
         for (int i = 0; i<petConfig["animation_sprite_index"]["idle_sprites"].size(); i++)
         {
@@ -84,8 +85,12 @@ void PetEngine::loadTexture()
 {
     surface = IMG_Load(properties.spriteFilePath.c_str());
     tex = SDL_CreateTextureFromSurface(renderer, surface);
-    buttonSurface = IMG_Load(properties.exitButtonFilePath.c_str());
-    buttonTex = SDL_CreateTextureFromSurface(renderer, buttonSurface);
+
+    exitButtonSurface = IMG_Load(properties.exitButtonFilePath.c_str());
+    exitButtonTex = SDL_CreateTextureFromSurface(renderer, exitButtonSurface);
+
+    reloadButtonSurface = IMG_Load(properties.reloadButtonFilePath.c_str());
+    reloadButtonTex = SDL_CreateTextureFromSurface(renderer, reloadButtonSurface);
 
     for (int i = 0; i<properties.spriteMapRows; i++)
     {
@@ -101,8 +106,11 @@ void PetEngine::loadTexture()
     srcRect = spriteRects[0];
     dsRect = {0, 0, static_cast<float>(properties.displaySize.x), static_cast<float>(properties.displaySize.y)};
 
-    buttonSrcRect = {0, 0, properties.exitButtonSize.x, properties.exitButtonSize.y};
-    buttonDsRect = {properties.displaySize.x - properties.exitButtonSize.x, 0, properties.exitButtonSize.x, properties.exitButtonSize.y};
+    exitButtonSrcRect = {0, 0, 16, 16};
+    exitButtonDsRect = {properties.displaySize.x - 16, 0, 16, 16};
+
+    reloadButtonSrcRect = {0, 0, 16, 16};
+    reloadButtonDsRect = {properties.displaySize.x - 32, 0, 16, 16};
 
 }
 
@@ -127,8 +135,8 @@ void PetEngine::displayWindow()
         SDL_RenderTextureRotated(renderer, tex, &srcRect, &dsRect, 0, &center, SDL_FLIP_HORIZONTAL);
         if (showingExitButton)
         {
-            SDL_RenderTextureRotated(renderer, buttonTex, &buttonSrcRect, &buttonDsRect, 0, &center, SDL_FLIP_HORIZONTAL);
-    
+            SDL_RenderTextureRotated(renderer, exitButtonTex, &exitButtonSrcRect, &exitButtonDsRect, 0, &center, SDL_FLIP_HORIZONTAL);
+            SDL_RenderTextureRotated(renderer, reloadButtonTex, &reloadButtonSrcRect, &reloadButtonDsRect, 0, &center, SDL_FLIP_HORIZONTAL);
         }
     }
     else
@@ -136,7 +144,8 @@ void PetEngine::displayWindow()
         SDL_RenderTextureRotated(renderer, tex, &srcRect, &dsRect, 0, &center, SDL_FLIP_NONE);
         if (showingExitButton)
         {
-            SDL_RenderTextureRotated(renderer, buttonTex, &buttonSrcRect, &buttonDsRect, 0, &center, SDL_FLIP_NONE);
+            SDL_RenderTextureRotated(renderer, exitButtonTex, &exitButtonSrcRect, &exitButtonDsRect, 0, &center, SDL_FLIP_NONE);
+                SDL_RenderTextureRotated(renderer, reloadButtonTex, &reloadButtonSrcRect, &reloadButtonDsRect, 0, &center, SDL_FLIP_NONE);
         }
     }
 
@@ -158,6 +167,10 @@ void PetEngine::setPosition(float xPos, float yPos)
 
 void PetEngine::destroyWindow()
 {
+    SDL_DestroyTexture(tex);
+    SDL_DestroyTexture(exitButtonTex);
+    SDL_DestroyTexture(reloadButtonTex);
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 }
@@ -345,10 +358,5 @@ int PetEngine::getSpriteIndex(int index)
             return properties.mousePickedSpritesIndices[index];
             break;
     }
-}
-
-Vector2int PetEngine::getExitButtonSize()
-{
-    return properties.exitButtonSize;
 }
 
