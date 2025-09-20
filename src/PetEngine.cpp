@@ -133,20 +133,18 @@ void PetEngine::displayWindow()
     if (facingRight)
     {
         SDL_RenderTextureRotated(renderer, tex, &srcRect, &dsRect, 0, &center, SDL_FLIP_HORIZONTAL);
-        if (showingExitButton)
-        {
-            SDL_RenderTextureRotated(renderer, exitButtonTex, &exitButtonSrcRect, &exitButtonDsRect, 0, &center, SDL_FLIP_HORIZONTAL);
-            SDL_RenderTextureRotated(renderer, reloadButtonTex, &reloadButtonSrcRect, &reloadButtonDsRect, 0, &center, SDL_FLIP_HORIZONTAL);
-        }
+
     }
     else
     {
         SDL_RenderTextureRotated(renderer, tex, &srcRect, &dsRect, 0, &center, SDL_FLIP_NONE);
-        if (showingExitButton)
-        {
-            SDL_RenderTextureRotated(renderer, exitButtonTex, &exitButtonSrcRect, &exitButtonDsRect, 0, &center, SDL_FLIP_NONE);
-                SDL_RenderTextureRotated(renderer, reloadButtonTex, &reloadButtonSrcRect, &reloadButtonDsRect, 0, &center, SDL_FLIP_NONE);
-        }
+
+    }
+
+    if (showingExitButton)
+    {
+        SDL_RenderTextureRotated(renderer, exitButtonTex, &exitButtonSrcRect, &exitButtonDsRect, 0, &center, SDL_FLIP_NONE);
+            SDL_RenderTextureRotated(renderer, reloadButtonTex, &reloadButtonSrcRect, &reloadButtonDsRect, 0, &center, SDL_FLIP_NONE);
     }
 
     SDL_RenderPresent(renderer);
@@ -228,7 +226,7 @@ void PetEngine::fall()
 
 void PetEngine::floatUp()
 {
-    virtualPos.y -= 4;
+    virtualPos.y -= 8;
 }
 
 void PetEngine::walk()

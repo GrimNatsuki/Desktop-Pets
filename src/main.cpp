@@ -50,7 +50,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     Pet.createWindow();
     Pet.loadTexture();
 
-    marginBounds = {displayBounds.w/3, displayBounds.w*2/3, 0, (displayBounds.h-Pet.getDisplaySize().y)};
+    marginBounds = {displayBounds.w/3, displayBounds.w*2/3, 0, displayBounds.h};
 
     return SDL_APP_CONTINUE;
 }
@@ -77,6 +77,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
                 Pet.loadConfig();
                 Pet.createWindow();
                 Pet.loadTexture();
+                std::cout<<Pet.getDisplaySize().y<<std::endl;
             }
             else
             {
@@ -150,7 +151,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         Pet.updatePos();
 
         Pet.gravity();
-        if (Pet.getPos().y < marginBounds.down && Pet.getState() != PetState::mousePicked && Pet.getState() != PetState::floatUp)
+        if ((Pet.getPos().y + Pet.getDisplaySize().y) < marginBounds.down  && Pet.getState() != PetState::mousePicked && Pet.getState() != PetState::floatUp)
         {
             Pet.switchState(PetState::falling);
         }
@@ -158,15 +159,19 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         {
             Pet.switchState(PetState::floatUp);
         }
-        else if (Pet.getPos().y > marginBounds.down && Pet.getState() == PetState::floatUp)
+        else if ((Pet.getDisplaySize().y + Pet.getPos().y) > marginBounds.down && Pet.getState() != PetState::mousePicked && Pet.getState() != PetState::falling)
         {
+            Pet.switchState(PetState::floatUp);
             Pet.floatUp();
         }
         else if (Pet.getState() == PetState::floatUp)
         {
-            Pet.setPosition(Pet.getPos().x, marginBounds.down);
+            Pet.setPosition(Pet.getPos().x, (marginBounds.down - Pet.getDisplaySize().y));
+            std::cout<<(Pet.getPos().x, (marginBounds.down - Pet.getDisplaySize().y))<<std::endl;
             Pet.switchState(PetState::idle);
         }
+
+
         switch (Pet.getState())
         {
             case PetState::idle:
